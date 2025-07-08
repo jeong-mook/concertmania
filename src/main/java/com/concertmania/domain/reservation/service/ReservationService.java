@@ -9,6 +9,7 @@ import com.concertmania.domain.reservation.model.Reservation;
 import com.concertmania.domain.reservation.repository.ReservationRepository;
 import com.concertmania.global.error.ErrorCode;
 import com.concertmania.global.error.exceptions.ReservationException;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -47,6 +49,9 @@ public class ReservationService {
             return reserveSeatInternal(userId, concertId, seatId);
 
         } catch (InterruptedException e) {
+            log.error("event={}, status={}, userId={}, concertId={}, seatId={}, error='{}'",
+                    "RESERVATION_FAILED", "ERROR", userId, concertId, seatId, e.getMessage(), e);
+
             throw new RuntimeException(e);
         } finally {
             // 락 해제
@@ -64,6 +69,11 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("콘서트 정보를 찾을 수 없습니다."));
 
         Reservation reservation = concert.reserveSeat(userId, seatId);
+
+        log.info("event={}, status={}, userId={}, concertId={}, seatId={}",
+                "RESERVATION_SUCCESS", "RESERVE", userId, concertId, seatId);
+
+
         reservationRepository.save(reservation);
 
         eventPublisher.publishEvent(new ReservationCreatedEvent(
