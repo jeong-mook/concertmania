@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/waiting-queue")
+@RequestMapping("/api/v1/waiting-queue")
 public class WaitingQueueController {
 
     private static final Logger logger = LoggerFactory.getLogger(WaitingQueueController.class);

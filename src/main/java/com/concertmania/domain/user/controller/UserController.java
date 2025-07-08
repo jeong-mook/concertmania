@@ -3,9 +3,11 @@ package com.concertmania.domain.user.controller;
 import com.concertmania.domain.user.dto.UserDto;
 import com.concertmania.domain.user.model.User;
 import com.concertmania.domain.user.service.UserService;
+import com.concertmania.global.dto.ApiResult;
+import com.concertmania.global.dto.PageResponse;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,13 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
+@Slf4j
 public class UserController {
-
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
 
@@ -31,55 +32,29 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<User> users = userService.findAll();
-        List<UserDto> dtoList = users.stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtoList);
+    public ResponseEntity<ApiResult<PageResponse<UserDto.Response>>> getAllUsers() {
+        Page<UserDto.Response> users = userService.findAllUsers();
+        return ResponseEntity.ok(ApiResult.success(PageResponse.from(users)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
-        return userService.findById(id)
-                .map(this::toDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResult<UserDto>> getUserById(@PathVariable Long id) {
+        UserDto user = userService.findUserDtoById(id).map(UserDto.Response::from).orElseGet(UserDto.Response::empty);
+        return ResponseEntity.ok(ApiResult.success(user));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto dto) {
-        User user = toEntity(dto);
-        User saved = userService.registerUser(user);
-        logger.info("User registered: id={}, email={}", saved.getId(), saved.getEmail());
-        return ResponseEntity.ok(toDto(saved));
+    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDto) {
+        UserDto savedUser = userService.registerUser(userDto);
+        log.info("User registered: id={}, email={}", savedUser.id(), savedUser.email());
+        return ResponseEntity.ok(savedUser);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
-        logger.info("User deleted: id={}", id);
+        log.info("User deleted: id={}", id);
         return ResponseEntity.noContent().build();
     }
 
-    private UserDto toDto(User user) {
-        return UserDto.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .password(null) // 보안상 비밀번호 미포함
-                .name(user.getName())
-                .userRole(user.getUserRole())
-                .build();
-    }
-
-    private User toEntity(UserDto dto) {
-        return new User(
-                dto.getId(),
-                dto.getEmail(),
-                dto.getPassword(),
-                dto.getName(),
-                dto.getUserRole(),
-                null
-        );
-    }
 }

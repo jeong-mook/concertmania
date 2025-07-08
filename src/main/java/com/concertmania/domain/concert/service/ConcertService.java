@@ -95,8 +95,6 @@ public class ConcertService {
 
     @Transactional
     public ConcertDto.Response createConcert(ConcertDto.CreateRequest request) {
-//        Location location = locationRepository.findById(Request.locationId())
-//                .orElseThrow(() -> new EntityNotFoundException("해당 공연장은 존재하지 않습니다."));
 
         Concert concert = Concert.builder()
                 .name(request.name())
@@ -107,36 +105,7 @@ public class ConcertService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-//        List<Seat> seats = new ArrayList<>();
-//
-//        for (SeatGradeConfig config : location.getSeatConfigs()) {
-//            for (char row = config.getStartRow(); row <= config.getEndRow(); row++) {
-//                for (int num = 1; num <= config.getSeatPerRow(); num++) {
-//                    Seat seat = Seat.builder()
-//                            .rowName(String.valueOf(row))
-//                            .seatNumber(num)
-//                            .grade(config.getGrade())
-//                            .status(Seat.Status.AVAILABLE)
-//                            .concert(concert)
-//                            .build();
-//                    seats.add(seat);
-//                }
-//            }
-//        }
-//
-//        concert.getSeats().addAll(seats);
         concertRepository.save(concert);
-//        createConcertAndGenerateSeats(concert);
-
-//        List<ConcertResponse.SeatResponse> seatResponses = seats.stream()
-//                .map(seat -> new ConcertResponse.SeatResponse(
-//                        seat.getId(),
-//                        seat.getGrade(),
-//                        seat.getRowName(),
-//                        seat.getSeatNumber(),
-//                        seat.getStatus().name()
-//                ))
-//                .collect(Collectors.toList());
 
         return ConcertDto.Response.from(concert);
 

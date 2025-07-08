@@ -1,10 +1,12 @@
 package com.concertmania.domain.user.service;
 
+import com.concertmania.domain.user.dto.UserDto;
 import com.concertmania.domain.user.dto.UserRole;
 import com.concertmania.domain.user.model.User;
 import com.concertmania.domain.user.repository.UserRepository;
 import com.concertmania.global.error.exceptions.EmailAlreadyExistsException;
 import com.concertmania.global.error.exceptions.UserNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,37 @@ public class UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
+    public Page<UserDto.Response> findAllUsers() {
+        return userRepository.findAll().stream()
+                .map(UserDto.Response::from)
+                .toList();
+    }
+
+    public Optional<User> findUserDtoById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    @Transactional
+    public UserDto registerUser(UserDto userDto) {
+        User user = new User(
+                null,
+                userDto.email(),
+                userDto.password(),
+                userDto.name(),
+                userDto.userRole(),
+                null
+        );
+
+        user.encodePassword(passwordEncoder);
+        user.createdNow();
+
+        User savedUser = userRepository.save(user);
+        return UserDto.from(savedUser);
+    }
+
+
+
 
     public List<User> findAll() {
         return userRepository.findAll();
