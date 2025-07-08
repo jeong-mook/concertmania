@@ -1,0 +1,92 @@
+spring:
+  profiles:
+    active: dev
+jwt:
+  secret: "a0d8575663b05050bec0d85ef6b556699c21ac76954d77dd30ee0c9e62908a3c7b661e4d435628f2bf8dc60d6652865c307580e45d2642e7d0edcf94b1496c4f"
+  expiration: 3600000 # 1시간 (밀리초)
+
+
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/concertmania_dev
+    username: concertuser_dev
+    password: miRmaw-jisjem-5quhwi
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: concert-mania-dev-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.jdbc.bind: TRACE
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:mysql://localhost:3306/concertmania_test
+    username: concertuser_test
+    password: zufnY0-mestuc-vudvap
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: concert-mania-test-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+
+
+
+logging:
+  level:
+    root: WARN

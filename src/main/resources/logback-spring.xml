@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- application.yml의 프로퍼티를 XML에서 사용하기 위한 설정 -->
+    <springProperty scope="context" name="LOG_LEVEL" source="logging.level.root" defaultValue="info"/>
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="concert-mania"/>
+
+    <!-- 1. JSON 형식으로 로그를 출력하는 Appender 설정 -->
+    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!-- JSON 로그에 포함될 커스텀 필드 -->
+            <customFields>{"application_name":"${APP_NAME}"}</customFields>
+        </encoder>
+    </appender>
+
+    <!--
+        2. 개발 환경용 프로파일(dev) 설정
+        - 일반 텍스트 로그와 JSON 로그를 모두 출력하여 개발 시 가독성과 분석 용이성을 모두 잡습니다.
+    -->
+    <springProfile name="dev">
+        <root level="${LOG_LEVEL}">
+            <appender-ref ref="CONSOLE_JSON" />
+        </root>
+        <!-- 우리 애플리케이션 패키지는 DEBUG 레벨로 상세하게 로깅 -->
+        <logger name="com.assignment" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE_JSON" />
+        </logger>
+    </springProfile>
+
+    <!--
+        3. 운영 환경용 프로파일(prod) 설정
+        - 운영 환경에서는 Logstash로 전송할 JSON 로그만 출력합니다.
+    -->
+    <springProfile name="prod">
+        <root level="${LOG_LEVEL}">
+            <appender-ref ref="CONSOLE_JSON" />
+        </root>
+    </springProfile>
+
+</configuration>
