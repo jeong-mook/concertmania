@@ -28,7 +28,7 @@ public class ConcertController {
 
     @GetMapping
     public ResponseEntity<ApiResult<PageResponse<ConcertDto.Response>>> getAllConcerts(
-            @Valid @RequestBody ConcertDto.request request,
+            @Valid @RequestBody ConcertDto.Request request,
             Pageable pageable
     ) {
         Page<ConcertDto.Response> concerts = concertService.listConcerts(request, pageable);

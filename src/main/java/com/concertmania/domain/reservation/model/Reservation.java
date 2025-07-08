@@ -11,9 +11,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +26,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "reservations", indexes = {
+        @Index(name = "IDX_RESERVATION_USER_ID", columnList = "user_id"),
+        @Index(name = "IDX_RESERVATION_CONCERT_ID", columnList = "concert_id")
+})
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Builder

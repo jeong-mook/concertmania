@@ -92,7 +92,7 @@ public class ReservationServiceConcurrencyTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    reservationService.reserveSeat(user.getId(), concert.getId(), seatToReserve.getId());
+                    reservationService.reserveSeatInternal(user.getId(), concert.getId(), seatToReserve.getId());
                 } finally {
                     latch.countDown();
                 }

@@ -1,6 +1,5 @@
 package com.concertmania.domain.concert.controller;
 
-import com.concertmania.domain.concert.dto.ConcertCreateRequest;
 import com.concertmania.domain.concert.dto.ConcertDto;
 import com.concertmania.domain.concert.dto.UpdateConcertRequestDto;
 import com.concertmania.domain.concert.service.ConcertService;
@@ -38,7 +37,7 @@ public class AdminConcertController {
 
     // 관리자만 콘서트 등록 가능
     @PostMapping
-    public ResponseEntity<ApiResult<ConcertDto.Response>> createConcert(@RequestBody @Valid ConcertDto.createRequest request) {
+    public ResponseEntity<ApiResult<ConcertDto.Response>> createConcert(@RequestBody @Valid ConcertDto.CreateRequest request) {
         // 콘서트 생성 로직
         ConcertDto.Response response = concertService.createConcert(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResult.success(response));

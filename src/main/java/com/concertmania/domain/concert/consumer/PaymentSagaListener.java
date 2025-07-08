@@ -3,7 +3,6 @@ package com.concertmania.domain.concert.consumer;
 import com.concertmania.domain.concert.dto.ReservationCreatedEvent;
 import com.concertmania.domain.payment.model.Payment;
 import com.concertmania.domain.payment.service.PaymentService;
-import com.concertmania.domain.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

@@ -2,7 +2,6 @@ package com.concertmania.global.error;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 public class ErrorResponse {

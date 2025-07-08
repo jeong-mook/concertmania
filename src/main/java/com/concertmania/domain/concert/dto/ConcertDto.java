@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 public class ConcertDto {
 
-    public record createRequest(
+    public record CreateRequest(
     @NotBlank(message = "제목은 필수 입력값입니다.")
     @Size(max = 100, message = "제목은 최대 100자까지 입력 가능합니다.")
     String name,
@@ -35,7 +35,7 @@ public class ConcertDto {
     LocalDateTime openAt
     ) {}
 
-    public record request(
+    public record Request(
             String name,
             String location,
             LocalDateTime concertStartDate,

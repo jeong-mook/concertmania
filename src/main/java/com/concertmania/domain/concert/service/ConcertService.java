@@ -1,7 +1,7 @@
 package com.concertmania.domain.concert.service;
 
-import com.concertmania.domain.concert.dto.ConcertCreateRequest;
 import com.concertmania.domain.concert.dto.ConcertDto;
+import com.concertmania.domain.concert.dto.SeatDto;
 import com.concertmania.domain.concert.dto.UpdateConcertRequestDto;
 import com.concertmania.domain.concert.model.Concert;
 import com.concertmania.domain.concert.repository.ConcertRepository;
@@ -15,6 +15,7 @@ import com.concertmania.global.error.ErrorCode;
 import com.concertmania.global.error.exceptions.ReservationException;
 import com.concertmania.global.util.SpecBuilder;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -49,7 +50,7 @@ public class ConcertService {
 
     // TODO : 실험적으로 빌더 패턴을 이용하여 QueryDSL을 극단적으로 사용안하는 방법으로 해보았으나, 비효율적인 방법입니다.
     // TODO : 가독성이 갈수록 떨어질 것으로 보입니다. and (and 조건 하기 시작하면서 가독성이 최악으로 변경됩니다. 실험은 실험일 뿐 더이상 사용하지 않도록 하겠습니다.
-    public Page<ConcertDto.Response> listConcerts(ConcertDto.request request, Pageable pageable) {
+    public Page<ConcertDto.Response> listConcerts(ConcertDto.Request request, Pageable pageable) {
         Specification<Concert> build = SpecBuilder.<Concert>create()
                 .and(request.name() != null, concertSpecifications.nameContains(request.name()))
                 .and(request.location() != null, (concertSpecifications.locationContains(request.location())))
@@ -72,6 +73,16 @@ public class ConcertService {
         return concertRepository.findById(id);
     }
 
+    @Cacheable(value = "concertSeats", key = "#concertId")
+    public List<SeatDto.Response> findBySeat(Long concertId) {
+        Concert concert = concertRepository.findById(concertId)
+                .orElseThrow(() -> new EntityNotFoundException("Concert not found"));
+
+        return concert.getSeats().stream()
+                .map(SeatDto.Response::from)
+                .toList();
+    }
+
     @Transactional
     public Concert save(Concert concert) {
         return concertRepository.save(concert);
@@ -83,8 +94,8 @@ public class ConcertService {
     }
 
     @Transactional
-    public ConcertDto.Response createConcert(ConcertDto.createRequest request) {
-//        Location location = locationRepository.findById(request.locationId())
+    public ConcertDto.Response createConcert(ConcertDto.CreateRequest request) {
+//        Location location = locationRepository.findById(Request.locationId())
 //                .orElseThrow(() -> new EntityNotFoundException("해당 공연장은 존재하지 않습니다."));
 
         Concert concert = Concert.builder()

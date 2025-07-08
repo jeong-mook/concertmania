@@ -1,8 +1,8 @@
 package com.concertmania.domain.auth.service;
 
 import com.concertmania.domain.auth.dto.AuthResponse;
-import com.concertmania.domain.user.dto.UserRole;
 import com.concertmania.domain.user.dto.SignupRequest;
+import com.concertmania.domain.user.dto.UserRole;
 import com.concertmania.domain.user.model.User;
 import com.concertmania.domain.user.repository.UserRepository;
 import com.concertmania.global.error.ErrorCode;

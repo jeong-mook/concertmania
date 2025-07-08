@@ -20,8 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 
 @Entity
 @Getter
@@ -33,9 +31,6 @@ public class Seat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String rowName; // 예: A, B, C...
-    private int seatNumber; // 예: 1, 2, 3...
 
     private String grade;
 

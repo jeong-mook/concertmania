@@ -1,6 +1,5 @@
 package com.concertmania.domain.payment.consumer;
 
-import com.concertmania.domain.concert.model.Seat;
 import com.concertmania.domain.payment.dto.PaymentFailedEventPayload;
 import com.concertmania.domain.reservation.model.Reservation;
 import com.concertmania.domain.reservation.service.ReservationService;
